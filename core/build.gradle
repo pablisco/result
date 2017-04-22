@@ -1,0 +1,18 @@
+group 'com.pablisco.result'
+version '0.1'
+
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:2.6.0'
+
+}
