@@ -1,4 +1,5 @@
-# Result
+# Result [![Code Coverage](https://img.shields.io/codecov/c/github/pablisco/result/master.svg)](https://codecov.io/github/pablisco/result?branch=master)
+
 
 - Result
 - ???

@@ -2,6 +2,7 @@ group 'com.pablisco.result'
 version '0.1'
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -16,3 +17,12 @@ dependencies {
     testCompile 'org.assertj:assertj-core:2.6.0'
 
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+check.dependsOn jacocoTestReport
