@@ -1,4 +1,4 @@
-# Result [![Code Coverage](https://img.shields.io/codecov/c/github/pablisco/result/master.svg)](https://codecov.io/github/pablisco/result?branch=master)
+# Result [![Code Coverage](https://img.shields.io/codecov/c/github/pablisco/result/master.svg)](https://codecov.io/github/pablisco/result?branch=master) [![Travis branch](https://img.shields.io/travis/pablisco/result/master.svg)](https://travis-ci.org/pablisco/result)
 
 
 - Result
