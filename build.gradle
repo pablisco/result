@@ -1,3 +1,8 @@
 group 'com.pablisco.result'
-version '1'
 
+allprojects {
+    repositories {
+        jcenter()
+    }
+    version = "1"
+}

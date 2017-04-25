@@ -1,8 +1,18 @@
 group 'com.pablisco.result'
-version '0.1'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.4.0'
+    }
+}
 
 apply plugin: 'java'
 apply plugin: 'jacoco'
+apply plugin: 'com.novoda.bintray-release'
+
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -12,10 +22,8 @@ repositories {
 }
 
 dependencies {
-
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:2.6.0'
-
 }
 
 jacocoTestReport {
@@ -26,3 +34,13 @@ jacocoTestReport {
 }
 
 check.dependsOn jacocoTestReport
+
+publish {
+    repoName = 'com.pablisco.result'
+    userOrg = 'pablisco'
+    groupId = 'com.pablisco.result'
+    artifactId = 'result-core'
+    publishVersion = "1"
+    desc = 'Simple library to handle results'
+    website = 'https://github.com/pablisco/result'
+}
