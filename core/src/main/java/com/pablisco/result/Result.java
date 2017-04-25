@@ -16,6 +16,10 @@ public abstract class Result<S, F> {
 
     public abstract F getFailure();
 
+    public abstract <S2> Result<S2, F> onSuccess(OnSuccess<S, S2, F> onSuccess);
+
+    public abstract <F2> Result<S, F2> onFailure(OnFailure<S, F, F2> onFailure);
+
     private static class Failure<S, F> extends Result<S, F> {
 
         private F failure;
@@ -38,6 +42,16 @@ public abstract class Result<S, F> {
         @Override
         public F getFailure() {
             return failure;
+        }
+
+        @Override
+        public <S2> Result<S2, F> onSuccess(OnSuccess<S, S2, F> onSuccess) {
+            return failure(failure);
+        }
+
+        @Override
+        public <F2> Result<S, F2> onFailure(OnFailure<S, F, F2> onFailure) {
+            return onFailure.transform(failure);
         }
     }
 
@@ -64,6 +78,23 @@ public abstract class Result<S, F> {
             throw new UnsupportedOperationException("Can't get failure from successful Result. Did you check isSuccessful()?");
         }
 
+        @Override
+        public <S2> Result<S2, F> onSuccess(OnSuccess<S, S2, F> onSuccess) {
+            return onSuccess.transform(success);
+        }
+
+        @Override
+        public <F2> Result<S, F2> onFailure(OnFailure<S, F, F2> onFailure) {
+            return success(success);
+        }
+    }
+
+    public interface OnSuccess<S1, S2, F> {
+        Result<S2, F> transform(S1 success);
+    }
+
+    public interface OnFailure<S, F1, F2> {
+        Result<S, F2> transform(F1 failure);
     }
 
 }
