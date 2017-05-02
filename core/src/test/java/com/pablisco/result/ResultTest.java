@@ -56,16 +56,16 @@ public class ResultTest {
     @Test
     public void shouldTransformSuccess() throws Exception {
         Result<Character, String> result = Result.<String, String>success(SUCCESS_VALUE)
-            .onSuccess(new Result.OnSuccess<String, Integer, String>() {
+            .map(new Result.Function<String, Integer>() {
                 @Override
-                public Result<Integer, String> transform(String success) {
-                    return Result.success(INTEGER_VALUE);
+                public Integer apply(String s) {
+                    return INTEGER_VALUE;
                 }
             })
-            .onSuccess(new Result.OnSuccess<Integer, Character, String>() {
+            .map(new Result.Function<Integer, Character>() {
                 @Override
-                public Result<Character, String> transform(Integer success) {
-                    return Result.success(CHAR_VALUE);
+                public Character apply(Integer character) {
+                    return CHAR_VALUE;
                 }
             });
 
@@ -74,11 +74,25 @@ public class ResultTest {
     }
 
     @Test
+    public void shouldRemainFailure_whenMaping() throws Exception {
+        Result<Character, String> result = Result.<String, String>failure(FAILURE_VALUE)
+            .map(new Result.Function<String, Character>() {
+                @Override
+                public Character apply(String s) {
+                    return CHAR_VALUE;
+                }
+            });
+
+        assertThat(result.isSuccessful()).isFalse();
+        assertThat(result.getFailure()).isEqualTo(FAILURE_VALUE);
+    }
+
+    @Test
     public void shouldTransformSuccess_withFailure() throws Exception {
         Result<Character, String> failure = Result.<String, String>failure(FAILURE_VALUE)
-            .onSuccess(new Result.OnSuccess<String, Character, String>() {
+            .flatMap(new Result.Function<String, Result<Character, String>>() {
                 @Override
-                public Result<Character, String> transform(String success) {
+                public Result<Character, String> apply(String s) {
                     return Result.success(CHAR_VALUE);
                 }
             });
@@ -88,11 +102,11 @@ public class ResultTest {
     }
 
     @Test
-    public void shouldTransformFailure_intoSuccess() throws Exception {
-        Result<String, Character> result = Result.<String, String>failure(FAILURE_VALUE)
-            .onFailure(new Result.OnFailure<String, String, Character>() {
+    public void shouldNotTransformSuccess_intoSuccess() throws Exception {
+        Result<String, String> result = Result.<String, String>success("first success")
+            .flatMap(new Result.Function<String, Result<String, String>>() {
                 @Override
-                public Result<String, Character> transform(String failure) {
+                public Result<String, String> apply(String s) {
                     return Result.success(SUCCESS_VALUE);
                 }
             });
@@ -102,17 +116,67 @@ public class ResultTest {
     }
 
     @Test
-    public void shouldTransformToSuccess_fromSuccess() throws Exception {
+    public void shouldTransformToFailure_fromSuccess() throws Exception {
         Result<String, Character> result = Result.<String, String>success(SUCCESS_VALUE)
-            .onFailure(new Result.OnFailure<String, String, Character>() {
-                @Override
-                public Result<String, Character> transform(String failure) {
-                    return Result.failure(CHAR_VALUE);
+            .bimap(
+                new Result.Function<String, Result<String, Character>>() {
+                    @Override
+                    public Result<String, Character> apply(String s) {
+                        return Result.failure(CHAR_VALUE);
+                    }
+                },
+                new Result.Function<String, Result<String, Character>>() {
+                    @Override
+                    public Result<String, Character> apply(String s) {
+                        return Result.failure(Character.MIN_VALUE);
+                    }
                 }
-            });
+            );
+
+        assertThat(result.isSuccessful()).isFalse();
+        assertThat(result.getFailure()).isEqualTo(CHAR_VALUE);
+    }
+
+    @Test
+    public void shouldTransformToSuccess_fromFailure() throws Exception {
+        Result<String, Character> result = Result.<String, String>failure(FAILURE_VALUE)
+            .bimap(
+                new Result.Function<String, Result<String, Character>>() {
+                    @Override
+                    public Result<String, Character> apply(String s) {
+                        return Result.success(SUCCESS_VALUE);
+                    }
+                },
+                new Result.Function<String, Result<String, Character>>() {
+                    @Override
+                    public Result<String, Character> apply(String character) {
+                        return Result.success(SUCCESS_VALUE);
+                    }
+                }
+            );
 
         assertThat(result.isSuccessful()).isTrue();
         assertThat(result.getSuccess()).isEqualTo(SUCCESS_VALUE);
+    }
+
+    @Test
+    public void shouldSwapSuccessToFailure() throws Exception {
+        Result<String, Integer> result = Result.success(SUCCESS_VALUE);
+
+        Result<Integer, String> swapped = result.swap();
+
+        assertThat(swapped.isSuccessful()).isFalse();
+        assertThat(swapped.getFailure()).isEqualTo(SUCCESS_VALUE);
+    }
+
+    @Test
+    public void shouldSwapFailureToSuccess() throws Exception {
+        Result<String, Integer> result = Result.failure(INTEGER_VALUE);
+
+        Result<Integer, String> swapped = result.swap();
+
+        assertThat(swapped.isSuccessful()).isTrue();
+        assertThat(swapped.getSuccess()).isEqualTo(INTEGER_VALUE);
     }
 
 }
