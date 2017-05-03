@@ -17,16 +17,16 @@ public abstract class Result<S, F> {
         );
     }
 
-    public final S getSuccess() {
+    public final S getSuccessOrElse(S alternative) {
         return fold(
             t -> t,
-            unsupported("Can't get success from failure Result. Did you check isSuccessful()?")
+            t -> alternative
         );
     }
 
-    public final F getFailure() {
+    public final F getFailureOrElse(F alternative) {
         return fold(
-            unsupported("Can't get failure from successful Result. Did you check isSuccessful()?"),
+            t -> alternative,
             t -> t
         );
     }
@@ -100,10 +100,6 @@ public abstract class Result<S, F> {
     @FunctionalInterface
     public interface Function<T, R> {
         R apply(T t);
-    }
-
-    private static <T, R> Function<T, R> unsupported(String message) {
-        return t -> { throw new UnsupportedOperationException(message);};
     }
 
 }

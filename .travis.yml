@@ -21,4 +21,5 @@ cache:
     - $HOME/.gradle/
 
 script:
-  - ./gradlew clean build bintrayUpload -PbintrayUser=$bintrayUser -PbintrayKey=$bintrayKey -PdryRun=false
+  - ./gradlew clean build
+  - if [ $TRAVIS_BRANCH = 'master' ]; ./gradlew bintrayUpload -PbintrayUser=$bintrayUser -PbintrayKey=$bintrayKey -PdryRun=false fi
