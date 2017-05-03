@@ -1,5 +1,14 @@
 group 'com.pablisco.result'
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.4.0'
+    }
+}
+
 allprojects {
     repositories {
         jcenter()

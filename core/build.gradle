@@ -1,21 +1,14 @@
-group 'com.pablisco.result'
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.novoda:bintray-release:0.4.0'
-    }
+plugins {
+    id "java"
+    id "jacoco"
+    id "me.tatarka.retrolambda" version "3.6.0"
 }
-
-apply plugin: 'java'
-apply plugin: 'jacoco'
 apply plugin: 'com.novoda.bintray-release'
 
+group 'com.pablisco.result'
 
-sourceCompatibility = JavaVersion.VERSION_1_6
-targetCompatibility = JavaVersion.VERSION_1_6
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
@@ -40,7 +33,7 @@ publish {
     userOrg = 'pablisco'
     groupId = 'com.pablisco.result'
     artifactId = 'result-core'
-    publishVersion = "1"
+    publishVersion = "0.0.1"
     desc = 'Simple library to handle results'
     website = 'https://github.com/pablisco/result'
 }
