@@ -3,11 +3,12 @@ package org.example;
 import com.pablisco.result.Result;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.pablisco.result.ResultAssertions.assertThat;
 
 public class ExternalUseTest {
 
     private static class Success {}
+
     private static class Failure {}
 
     @Test
@@ -15,8 +16,7 @@ public class ExternalUseTest {
         Success expectedSuccess = new Success();
         Result<Success, Failure> result = Result.success(expectedSuccess);
 
-        assertThat(result.isSuccessful()).isTrue();
-        assertThat(result.getSuccess()).isEqualTo(expectedSuccess);
+        assertThat(result).hasSuccess(expectedSuccess);
     }
 
     @Test
@@ -24,8 +24,7 @@ public class ExternalUseTest {
         Failure expectedFailure = new Failure();
         Result<Success, Failure> result = Result.failure(expectedFailure);
 
-        assertThat(result.isSuccessful()).isFalse();
-        assertThat(result.getFailure()).isEqualTo(expectedFailure);
+        assertThat(result).hasFailure(expectedFailure);
     }
 
 }

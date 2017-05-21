@@ -2,8 +2,7 @@ package com.pablisco.result;
 
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static com.pablisco.result.ResultAssertions.assertThat;
 
 public class ResultTest {
 
@@ -16,40 +15,34 @@ public class ResultTest {
     public void shouldBeSuccessful_withSuccess() throws Exception {
         Result<String, String> result = Result.success(SUCCESS_VALUE);
 
-        assertThat(result.isSuccessful()).isTrue();
-        assertThat(result.getSuccess()).isEqualTo(SUCCESS_VALUE);
+        assertThat(result.getSuccessOrElse("invalid success")).isEqualTo(SUCCESS_VALUE);
+        assertThat(result).hasSuccess(SUCCESS_VALUE);
     }
 
     @Test
     public void shouldNotBeSuccessFul_withFailure() throws Exception {
         Result<String, String> result = Result.failure(FAILURE_VALUE);
 
-        assertThat(result.isSuccessful()).isFalse();
-        assertThat(result.getFailure()).isEqualTo(FAILURE_VALUE);
+        assertThat(result.getFailureOrElse("invalid failure")).isEqualTo(FAILURE_VALUE);
+        assertThat(result).hasFailure(FAILURE_VALUE);
     }
 
     @Test
-    public void shouldThrowException_whenRequestingFailureOnSuccess() throws Exception {
+    public void shouldReturnAlternative_whenRequestingFailureOnSuccess() throws Exception {
         Result<String, String> result = Result.success(SUCCESS_VALUE);
 
-        try {
-            result.getFailure();
-            failBecauseExceptionWasNotThrown(UnsupportedOperationException.class);
-        } catch (UnsupportedOperationException e) {
-            assertThat(e).hasMessage("Can't get failure from successful Result. Did you check isSuccessful()?");
-        }
+        String alternative = result.getFailureOrElse("alternative failure");
+
+        assertThat(alternative).isEqualTo("alternative failure");
     }
 
     @Test
-    public void shouldThrowException_whenRequestingSuccessOnFailure() throws Exception {
+    public void shouldReturnAlternative_whenRequestingSuccessOnFailure() throws Exception {
         Result<String, String> result = Result.failure(FAILURE_VALUE);
 
-        try {
-            result.getSuccess();
-            failBecauseExceptionWasNotThrown(UnsupportedOperationException.class);
-        } catch (UnsupportedOperationException e) {
-            assertThat(e).hasMessage("Can't get success from failure Result. Did you check isSuccessful()?");
-        }
+        String alternative = result.getSuccessOrElse("alternative success");
+
+        assertThat(alternative).isEqualTo("alternative success");
     }
 
     @Test
@@ -58,8 +51,7 @@ public class ResultTest {
             .map(s -> INTEGER_VALUE)
             .map(character -> CHAR_VALUE);
 
-        assertThat(result.isSuccessful()).isTrue();
-        assertThat(result.getSuccess()).isEqualTo(CHAR_VALUE);
+        assertThat(result).hasSuccess(CHAR_VALUE);
     }
 
     @Test
@@ -67,8 +59,7 @@ public class ResultTest {
         Result<Character, String> result = Result.<String, String>failure(FAILURE_VALUE)
             .map(s -> CHAR_VALUE);
 
-        assertThat(result.isSuccessful()).isFalse();
-        assertThat(result.getFailure()).isEqualTo(FAILURE_VALUE);
+        assertThat(result).hasFailure(FAILURE_VALUE);
     }
 
     @Test
@@ -76,8 +67,7 @@ public class ResultTest {
         Result<Character, String> failure = Result.<String, String>failure(FAILURE_VALUE)
             .flatMap(s -> Result.success(CHAR_VALUE));
 
-        assertThat(failure.isSuccessful()).isFalse();
-        assertThat(failure.getFailure()).isEqualTo(FAILURE_VALUE);
+        assertThat(failure).hasFailure(FAILURE_VALUE);
     }
 
     @Test
@@ -85,8 +75,7 @@ public class ResultTest {
         Result<String, String> result = Result.<String, String>success("first success")
             .flatMap(s -> Result.success(SUCCESS_VALUE));
 
-        assertThat(result.isSuccessful()).isTrue();
-        assertThat(result.getSuccess()).isEqualTo(SUCCESS_VALUE);
+        assertThat(result).hasSuccess(SUCCESS_VALUE);
     }
 
     @Test
@@ -97,8 +86,7 @@ public class ResultTest {
                 f -> Result.failure(Character.MIN_VALUE)
             );
 
-        assertThat(result.isSuccessful()).isFalse();
-        assertThat(result.getFailure()).isEqualTo(CHAR_VALUE);
+        assertThat(result).hasFailure(CHAR_VALUE);
     }
 
     @Test
@@ -109,8 +97,7 @@ public class ResultTest {
                 f -> Result.success(SUCCESS_VALUE)
             );
 
-        assertThat(result.isSuccessful()).isTrue();
-        assertThat(result.getSuccess()).isEqualTo(SUCCESS_VALUE);
+        assertThat(result).hasSuccess(SUCCESS_VALUE);
     }
 
     @Test
@@ -119,8 +106,7 @@ public class ResultTest {
 
         Result<Integer, String> swapped = result.swap();
 
-        assertThat(swapped.isSuccessful()).isFalse();
-        assertThat(swapped.getFailure()).isEqualTo(SUCCESS_VALUE);
+        assertThat(swapped).hasFailure(SUCCESS_VALUE);
     }
 
     @Test
@@ -129,8 +115,7 @@ public class ResultTest {
 
         Result<Integer, String> swapped = result.swap();
 
-        assertThat(swapped.isSuccessful()).isTrue();
-        assertThat(swapped.getSuccess()).isEqualTo(INTEGER_VALUE);
+        assertThat(swapped).hasSuccess(INTEGER_VALUE);
     }
 
 }
